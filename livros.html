@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>biblioteca</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <!--HEADER-->
+    <header class="header-page">
+      <a href="index.html">
+        <h1>Biblioteca</h1>
+      </a>
+
+      <input type="text" id="pesquisar" placeholder="Pesquisar" />
+      <a href="#"> Login </a>
+      <a href="livros.html"> Cadastrar livros </a>
+      <a href="alunos.html"> Cadastrar alunos </a>
+    </header>
+    <!--main-->
+    <main class="page">
+      <!--article-->
+      <article class="article">
+        <h1>Livros</h1>
+        <input id="nome-livro" type="text" placeholder="Nome" />
+        <section>
+          <form class="form-livro">
+            <div>
+              <img class="img-form" src="#" id="foto" />
+              <textarea id="descricao-livro" rows="9" cols="45">
+Aqui apareçerá a descrição do livro</textarea
+              >
+            </div>
+            <input
+              id="genero-livro"
+              type="text"
+              placeholder="Escreva o género do livro"
+            />
+            <input
+              id="autor-livro"
+              type="text"
+              placeholder="Escreva o autor do livro"
+            />
+            <input
+              id="editora-livro"
+              type="text"
+              placeholder="Escreva a editora do livro"
+            />
+            <input
+              id="dataPub-livro"
+              type="text"
+              placeholder="Escreva a data de publicação do livro"
+            />
+            <input
+              id="volume-livro"
+              type="text"
+              placeholder="Escreva o número do volume do livro"
+            />
+            <input
+              id="quant-livro"
+              type="text"
+              placeholder="Escreva a quantidade do livro"
+            />
+          </form>
+        </section>
+      </article>
+    </main>
+    <footer class="footer-page">
+      <p>Made by os Desempregados</p>
+    </footer>
+  </body>
+</html>
