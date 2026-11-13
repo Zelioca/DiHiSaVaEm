@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DiHiSaVaEn - Sistema de Biblioteca</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      --header-bg: rgba(15, 23, 42, 0.85);
+      --card-bg-livros: linear-gradient(180deg, rgba(67, 56, 202, 0.35) 0%, rgba(30, 27, 75, 0.6) 100%);
+      --card-bg-alunos: linear-gradient(180deg, rgba(79, 70, 229, 0.35) 0%, rgba(30, 27, 75, 0.6) 100%);
+      --card-border: rgba(99, 102, 241, 0.3);
+      --card-hover-border: rgba(129, 140, 248, 0.6);
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --glass-blur: blur(12px);
+      --overlay-bg: #121624;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Cabeçalho */
+    header {
+      background: var(--header-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand-link {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      transition: opacity 0.2s ease;
+    }
+
+    .brand:hover {
+      opacity: 0.9;
+    }
+
+    .brand svg {
+      width: 28px;
+      height: 28px;
+      fill: var(--accent);
+    }
+
+    .version-badge {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .btn-login {
+      background: var(--accent);
+      color: #fff;
+      padding: 0.6rem 1.4rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .btn-login:hover {
+      background: var(--accent-hover);
+    }
+
+    /* Conteúdo Principal */
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2.5rem;
+    }
+
+    .section-card {
+      background: var(--card-bg-livros);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 3rem 2rem;
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .section-card.alunos {
+      background: var(--card-bg-alunos);
+    }
+
+    .section-card:hover {
+      border-color: var(--card-hover-border);
+      transform: translateY(-4px);
+    }
+
+    .card-title {
+      font-size: 2.25rem;
+      font-weight: 700;
+      margin-bottom: 2.5rem;
+    }
+
+    .button-group {
+      width: 100%;
+      max-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.85rem 1.5rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-search {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-search:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .btn-create {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-create:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+    }
+
+    .action-btn svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    /* Search Overlay Tela Cheia */
+    .search-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: var(--overlay-bg);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .search-overlay:target {
+      display: flex;
+    }
+
+    .overlay-header {
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .search-input-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 0.75rem 1.25rem;
+      gap: 0.75rem;
+    }
+
+    .search-input-container svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--text-muted);
+    }
+
+    .search-input-container input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 1.1rem;
+      width: 100%;
+    }
+
+    .btn-close {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 1.8rem;
+      line-height: 1;
+      padding: 0.5rem;
+      transition: color 0.2s ease;
+    }
+
+    .btn-close:hover {
+      color: #fff;
+    }
+
+    .overlay-body {
+      max-width: 800px;
+      width: 100%;
+      margin: 2rem auto 0;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .filter-bar label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .filter-bar select {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      outline: none;
+      font-size: 0.9rem;
+    }
+
+    .filter-bar select option {
+      background: #1e1b4b;
+      color: #fff;
+    }
+
+    .results-count {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .results-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .results-list li a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-main);
+      text-decoration: none;
+      transition: background 0.2s ease;
+    }
+
+    .results-list li a:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .item-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .item-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .not-found-item {
+      margin-top: 1.25rem;
+      border-top: 1px dashed rgba(255, 255, 255, 0.15);
+      padding-top: 1.25rem;
+    }
+
+    .btn-register-prompt {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.9rem;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px dashed var(--accent);
+      border-radius: 12px;
+      color: #a5b4fc;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .btn-register-prompt:hover {
+      background: rgba(99, 102, 241, 0.3);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <header>
+    <a href="index.html" class="brand-link" title="Ir para a página inicial">
+      <div class="brand">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/>
+        </svg>
+        <span>DiHiSaVaEn</span>
+      </div>
+    </a>
+
+    <div class="version-badge">
+      Sistema Admin v1.0
+    </div>
+
+    <div>
+      <a href="login.html" class="btn-login">Login Admin</a>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main>
+    <!-- Seção de Livros -->
+    <section class="section-card">
+      <h2 class="card-title">Livros</h2>
+      <div class="button-group">
+        <a href="#modal-busca-livros" class="action-btn btn-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Procurar Livro
+        </a>
+        <!-- Link atualizado para a página de cadastro de livros -->
+        <a href="cadastrar-livro.html" class="action-btn btn-create">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Cadastrar Livro
+        </a>
+      </div>
+    </section>
+
+    <!-- Seção de Alunos -->
+    <section class="section-card alunos">
+      <h2 class="card-title">Aluno</h2>
+      <div class="button-group">
+        <a href="#modal-busca-alunos" class="action-btn btn-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Procurar Aluno
+        </a>
+        <!-- Link atualizado para a página de cadastro de alunos -->
+        <a href="cadastrar-aluno.html" class="action-btn btn-create">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Cadastrar Aluno
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- OVERLAY DE BUSCA: LIVROS -->
+  <div id="modal-busca-livros" class="search-overlay">
+    <div class="overlay-header">
+      <div class="search-input-container">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input id="input-busca-livros" type="text" placeholder="Digite o título, autor ou gênero do livro..." autofocus >
+      </div>
+      <a href="#" class="btn-close" aria-label="Fechar busca">&times;</a>
+    </div>
+
+    <div class="overlay-body">
+      <div class="filter-bar">
+        <label for="sort-livros">Ordenar por:</label>
+        <select id="sort-livros">
+          <option value="alfabetica">Ordem Alfabética (A-Z)</option>
+          <option value="recentes">Data de Adição</option>
+          <option value="lancamento">Ano de Lançamento</option>
+          <option value="autor">Nome do Autor</option>
+        </select>
+      </div>
+
+      <div class="results-count">Exibindo os 10 primeiros resultados mais relevantes:</div>
+
+      <ul class="results-list" id="lista-resultados-livros">
+        <li><a href="detalhe-livro.html"><div class="item-info"><span>📖</span><strong>1984</strong></div><span class="item-meta">George Orwell</span></a></li>
+        <li><a href="detalhe-livro.html"><div class="item-info"><span>📖</span><strong>A Revolução dos Bichos</strong></div><span class="item-meta">George Orwell</span></a></li>
+        <li><a href="detalhe-livro.html"><div class="item-info"><span>📖</span><strong>Capitães da Areia</strong></div><span class="item-meta">Jorge Amado</span></a></li>
+        <li><a href="detalhe-livro.html"><div class="item-info"><span>📖</span><strong>Dom Casmurro</strong></div><span class="item-meta">Machado de Assis</span></a></li>
+        <li><a href="detalhe-livro.html"><div class="item-info"><span>📖</span><strong>Fahrenheit 451</strong></div><span class="item-meta">Ray Bradbury</span></a></li>
+        <li><a href="detalhe-livro.html"><div class="item-info"><span>📖</span><strong>Grande Sertão: Veredas</strong></div><span class="item-meta">Guimarães Rosa</span></a></li>
+        <li><a href="detalhe-livro.html"><div class="item-info"><span>📖</span><strong>O Alquimista</strong></div><span class="item-meta">Paulo Coelho</span></a></li>
+        <li><a href="detalhe-livro.html"><div class="item-info"><span>📖</span><strong>O Cortiço</strong></div><span class="item-meta">Aluísio Azevedo</span></a></li>
+        <li><a href="detalhe-livro.html"><div class="item-info"><span>📖</span><strong>O Hobbit</strong></div><span class="item-meta">J.R.R. Tolkien</span></a></li>
+        <li><a href="detalhe-livro.html"><div class="item-info"><span>📖</span><strong>Vidas Secas</strong></div><span class="item-meta">Graciliano Ramos</span></a></li>
+      </ul>
+
+      <!-- Link direcionando para o cadastro de livro caso não encontre -->
+      <div class="not-found-item">
+        <a href="cadastrar-livro.html" class="btn-register-prompt">
+          <span>➕ Não encontrou o livro desejado? Cadastre ele aqui</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY DE BUSCA: ALUNOS -->
+  <div id="modal-busca-alunos" class="search-overlay">
+    <div class="overlay-header">
+      <div class="search-input-container">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input id="input-busca-alunos" type="text" placeholder="Digite o nome do aluno ou matrícula..." autofocus>
+      </div>
+      <a href="#" class="btn-close" aria-label="Fechar busca">&times;</a>
+    </div>
+
+    <div class="overlay-body">
+      <div class="filter-bar">
+        <label for="sort-alunos">Ordenar por:</label>
+        <select id="sort-alunos">
+          <option value="alfabetica">Ordem Alfabética (A-Z)</option>
+          <option value="recentes">Cadastro Recente</option>
+          <option value="matricula">Número de Matrícula</option>
+        </select>
+      </div>
+
+      <div class="results-count">Exibindo os 10 primeiros resultados mais relevantes:</div>
+
+      <ul class="results-list" id="lista-resultados-alunos">
+        <li><a href="detalhe-aluno.html"><div class="item-info"><span>👤</span><strong>Ana Silva</strong></div><span class="item-meta">Matrícula: 202401</span></a></li>
+        <li><a href="detalhe-aluno.html"><div class="item-info"><span>👤</span><strong>Bruno Souza</strong></div><span class="item-meta">Matrícula: 202402</span></a></li>
+        <li><a href="detalhe-aluno.html"><div class="item-info"><span>👤</span><strong>Carlos Eduardo</strong></div><span class="item-meta">Matrícula: 202403</span></a></li>
+        <li><a href="detalhe-aluno.html"><div class="item-info"><span>👤</span><strong>Daniela Rocha</strong></div><span class="item-meta">Matrícula: 202404</span></a></li>
+        <li><a href="detalhe-aluno.html"><div class="item-info"><span>👤</span><strong>Eduardo Lima</strong></div><span class="item-meta">Matrícula: 202405</span></a></li>
+        <li><a href="detalhe-aluno.html"><div class="item-info"><span>👤</span><strong>Fernanda Costa</strong></div><span class="item-meta">Matrícula: 202406</span></a></li>
+        <li><a href="detalhe-aluno.html"><div class="item-info"><span>👤</span><strong>Gabriel Santos</strong></div><span class="item-meta">Matrícula: 202407</span></a></li>
+        <li><a href="detalhe-aluno.html"><div class="item-info"><span>👤</span><strong>Helena Martins</strong></div><span class="item-meta">Matrícula: 202408</span></a></li>
+        <li><a href="detalhe-aluno.html"><div class="item-info"><span>👤</span><strong>Igor Pereira</strong></div><span class="item-meta">Matrícula: 202409</span></a></li>
+        <li><a href="detalhe-aluno.html"><div class="item-info"><span>👤</span><strong>Julia Oliveira</strong></div><span class="item-meta">Matrícula: 202410</span></a></li>
+      </ul>
+
+      <!-- Link direcionando para o cadastro de aluno caso não encontre -->
+      <div class="not-found-item">
+        <a href="cadastrar-aluno.html" class="btn-register-prompt">
+          <span>➕ Não encontrou o aluno? Cadastre ele aqui</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <script src="js/db.js"></script>
+  <script src="js/busca.js"></script>
+</body>
+</html>
